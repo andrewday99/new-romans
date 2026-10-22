@@ -12,17 +12,12 @@ Requires Node 22.23+ (see `.nvmrc`).
 
 ## Editing content
 
+The site is currently a coming-soon home page plus the contact page. The photos, about and newsletter pages are in git history (commit `0c7a919`) for when they're needed.
+
 | What | Where |
 | --- | --- |
-| Tagline, email, hometown, bio, lineup, social links | `src/config.ts` (look for `TODO`) |
-| Beehiiv signup form | `beehiivEmbedUrl` in `src/config.ts` |
-| Photos | Drop images into `src/assets/photos/` |
-| Hero background photo (optional) | Add `src/assets/hero.jpg` |
+| Tagline, email, social links | `src/config.ts` (look for `TODO`) |
 | Colors, fonts | `:root` in `src/styles/global.css` |
-
-**Photos** are picked up automatically and sorted by filename, so prefix them `01-`, `02-`… to set the order. The filename becomes the alt text (`03-live-at-the-roxy.jpg` → "live at the roxy"). Astro resizes and converts them to modern formats at build time, so full-size originals are fine.
-
-**Beehiiv:** in Beehiiv go to *Audience → Subscribe forms*, pick or create a form, copy its embed code and paste only the iframe's `src` URL (e.g. `https://embeds.beehiiv.com/xxxxxxxx-...`) into `beehiivEmbedUrl`. Set the form's background to transparent and button color to `#c4501b` in Beehiiv so it matches.
 
 ## Deploying (Netlify, personal account)
 
