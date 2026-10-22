@@ -1,0 +1,202 @@
+---
+import { band, nav } from '../config';
+
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+---
+
+<header class="site-header" data-header>
+  <div class="bar wrap">
+    <a href="/" class="brand display" aria-label={`${band.name} home`}>
+      New <span class="accent">Romans</span>
+    </a>
+
+    <button
+      class="toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      data-nav-toggle
+    >
+      <span class="visually-hidden">Menu</span>
+      <span class="toggle-lines" aria-hidden="true"></span>
+    </button>
+
+    <nav id="site-nav" class="nav" aria-label="Main">
+      <ul>
+        {
+          nav.map((item) => (
+            <li>
+              <a href={item.href} aria-current={path === item.href ? 'page' : undefined}>
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<script>
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-nav-toggle]');
+
+  if (header && toggle) {
+    toggle.addEventListener('click', () => {
+      const open = header.classList.toggle('is-open');
+      toggle.setAttribute('aria-expanded', String(open));
+      document.body.style.overflow = open ? 'hidden' : '';
+    });
+
+    const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 40);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+</script>
+
+<style>
+  .site-header {
+    position: fixed;
+    inset: 0 0 auto;
+    z-index: 50;
+    transition:
+      background-color 0.6s var(--ease-film),
+      backdrop-filter 0.6s var(--ease-film);
+  }
+
+  .site-header.is-scrolled {
+    background: rgba(14, 11, 8, 0.82);
+    backdrop-filter: blur(8px);
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 72px;
+  }
+
+  .brand {
+    position: relative;
+    z-index: 2;
+    font-size: 1.6rem;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .brand .accent {
+    font-size: 1.15em;
+    margin-left: 0.05em;
+  }
+
+  .nav ul {
+    display: flex;
+    gap: clamp(1rem, 2.5vw, 2.25rem);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .nav a {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -6px;
+    height: 2px;
+    background: var(--orange);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-film);
+  }
+
+  .nav a:hover::after,
+  .nav a[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+
+  .toggle {
+    display: none;
+  }
+
+  @media (max-width: 760px) {
+    .toggle {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      margin-right: -10px;
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .toggle-lines,
+    .toggle-lines::before,
+    .toggle-lines::after {
+      display: block;
+      width: 26px;
+      height: 2px;
+      background: var(--cream);
+      transition: transform 0.4s var(--ease-film), opacity 0.3s;
+    }
+
+    .toggle-lines {
+      position: relative;
+    }
+
+    .toggle-lines::before,
+    .toggle-lines::after {
+      content: '';
+      position: absolute;
+      left: 0;
+    }
+
+    .toggle-lines::before { top: -8px; }
+    .toggle-lines::after { top: 8px; }
+
+    .is-open .toggle-lines { background: transparent; }
+    .is-open .toggle-lines::before { transform: translateY(8px) rotate(45deg); }
+    .is-open .toggle-lines::after { transform: translateY(-8px) rotate(-45deg); }
+
+    .nav {
+      position: fixed;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      background: var(--black);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s var(--ease-film), visibility 0.5s;
+    }
+
+    .is-open .nav {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .nav ul {
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    .nav a {
+      font-family: var(--font-display);
+      font-size: 2.6rem;
+      letter-spacing: 0.02em;
+    }
+  }
+</style>

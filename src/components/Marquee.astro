@@ -1,0 +1,46 @@
+---
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+const items = Array.from({ length: 8 }, () => text);
+---
+
+<div class="marquee" aria-hidden="true">
+  <div class="track">
+    {items.map((t) => <span class="display">{t} <i>✶</i></span>)}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    padding-block: 1.25rem;
+    border-block: 1px solid var(--umber);
+  }
+
+  .track {
+    display: flex;
+    width: max-content;
+    animation: scroll 60s linear infinite;
+  }
+
+  span {
+    padding-right: 2.5rem;
+    font-size: clamp(2.5rem, 1.5rem + 4vw, 5rem);
+    white-space: nowrap;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--cream-dim);
+  }
+
+  i {
+    font-style: normal;
+    color: var(--orange);
+    -webkit-text-stroke: 0;
+  }
+
+  @keyframes scroll {
+    to { transform: translateX(-50%); }
+  }
+</style>

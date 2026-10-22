@@ -1,0 +1,23 @@
+---
+import Base from '../layouts/Base.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+---
+
+<Base title="Photos" description="Photos of New Romans — live, on the road and in the studio.">
+  <header class="page-head wrap">
+    <p class="label" data-reveal>Roll 01</p>
+    <h1 class="display" data-reveal style="--reveal-delay: 0.1s">
+      Photos <span class="accent">from the road</span>
+    </h1>
+  </header>
+
+  <section class="wrap gallery">
+    <PhotoGrid />
+  </section>
+</Base>
+
+<style>
+  .gallery {
+    padding-bottom: clamp(4rem, 10vw, 8rem);
+  }
+</style>

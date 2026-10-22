@@ -1,0 +1,85 @@
+---
+import { band, socials } from '../config';
+
+const links = socials.filter((s) => s.href);
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <hr class="rule" />
+  <div class="wrap inner">
+    <p class="sign display">
+      New <span class="accent">Romans</span>
+    </p>
+
+    {
+      links.length > 0 && (
+        <ul class="socials">
+          {links.map((s) => (
+            <li>
+              <a href={s.href} rel="noopener" target="_blank">
+                {s.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+
+    <div class="meta label">
+      <a href={`mailto:${band.email}`}>{band.email}</a>
+      <span>© {year} {band.name}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: auto;
+  }
+
+  .inner {
+    display: grid;
+    gap: 2rem;
+    padding-block: 3.5rem 3rem;
+  }
+
+  .sign {
+    font-size: clamp(3rem, 2rem + 6vw, 7rem);
+    color: var(--umber);
+    -webkit-text-stroke: 1px var(--orange);
+  }
+
+  .sign .accent {
+    -webkit-text-stroke: 0;
+    color: var(--orange);
+  }
+
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .socials a {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--cream);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+  }
+
+  .meta a {
+    color: var(--cream-dim);
+  }
+</style>

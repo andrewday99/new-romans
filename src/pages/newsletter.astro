@@ -1,0 +1,39 @@
+---
+import Base from '../layouts/Base.astro';
+import Newsletter from '../components/Newsletter.astro';
+---
+
+<Base title="Newsletter" description="Join the New Romans mailing list for new music, shows and news.">
+  <header class="page-head wrap">
+    <p class="label" data-reveal>Mailing list</p>
+    <h1 class="display" data-reveal style="--reveal-delay: 0.1s">
+      Stay <span class="accent">tuned in</span>
+    </h1>
+  </header>
+
+  <section class="wrap body">
+    <p class="lede" data-reveal>
+      New songs before anyone else, tour dates the day they're booked, and the odd note from the road.
+    </p>
+    <div data-reveal style="--reveal-delay: 0.2s">
+      <Newsletter />
+    </div>
+    <p class="label" data-reveal style="--reveal-delay: 0.3s">Unsubscribe any time.</p>
+  </section>
+</Base>
+
+<style>
+  .body {
+    display: grid;
+    gap: 2rem;
+    padding-bottom: clamp(4rem, 10vw, 8rem);
+  }
+
+  .body > * {
+    max-width: 820px;
+  }
+
+  .lede {
+    margin: 0;
+  }
+</style>

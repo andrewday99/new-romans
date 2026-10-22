@@ -1,0 +1,53 @@
+---
+import { beehiivEmbedUrl } from '../config';
+
+interface Props {
+  /** Compact single-line Beehiiv form (email + button only). */
+  slim?: boolean;
+}
+
+const { slim = false } = Astro.props;
+const src = beehiivEmbedUrl
+  ? `${beehiivEmbedUrl}${beehiivEmbedUrl.includes('?') ? '&' : '?'}slim=${slim}`
+  : '';
+---
+
+<div class:list={['newsletter', { slim }]}>
+  {
+    src ? (
+      <iframe
+        src={src}
+        title="Subscribe to the New Romans newsletter"
+        height={slim ? 52 : 320}
+        loading="lazy"
+        scrolling="no"
+        frameborder="0"
+        data-test-id="beehiiv-embed"
+      />
+    ) : (
+      <p class="pending label">Newsletter signup coming soon — set beehiivEmbedUrl in src/config.ts</p>
+    )
+  }
+</div>
+
+<style>
+  .newsletter {
+    width: 100%;
+    max-width: 560px;
+  }
+
+  iframe {
+    display: block;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    background: transparent;
+  }
+
+  .pending {
+    margin: 0;
+    padding: 1.1rem 1.25rem;
+    border: 1px dashed currentColor;
+    color: inherit;
+  }
+</style>

@@ -1,0 +1,282 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import LightLeak from '../components/LightLeak.astro';
+import PhotoGrid from '../components/PhotoGrid.astro';
+import Newsletter from '../components/Newsletter.astro';
+import Marquee from '../components/Marquee.astro';
+import { band, bio } from '../config';
+
+// Optional hero background: add src/assets/hero.jpg (or .png/.webp) and it's used automatically.
+const heroFiles = import.meta.glob<{ default: ImageMetadata }>('../assets/hero.{jpg,jpeg,png,webp}', {
+  eager: true,
+});
+const hero = Object.values(heroFiles)[0]?.default;
+---
+
+<Base>
+  <section class="hero">
+    {hero && <Image src={hero} alt="" class="hero-img" widths={[800, 1400, 2200]} sizes="100vw" loading="eager" fetchpriority="high" />}
+    <div class="hero-wash" aria-hidden="true"></div>
+    <LightLeak />
+
+    <div class="hero-inner wrap">
+      <p class="label hero-kicker">
+        <span>Side A</span>
+        <span class="dot" aria-hidden="true"></span>
+        <span>{band.hometown}</span>
+      </p>
+
+      <h1 class="display hero-title">
+        <span class="line"><span>New</span></span>
+        <span class="line"><span>Romans</span></span>
+      </h1>
+
+      <p class="hero-tag accent">{band.tagline}</p>
+
+      <div class="hero-cta">
+        <a class="btn" href="/newsletter/">Join the list</a>
+        <a class="btn btn--ghost" href="/photos/">See photos</a>
+      </div>
+    </div>
+
+    <a class="scroll-cue label" href="#intro" aria-label="Scroll to content">
+      <span>Scroll</span>
+      <span class="cue-line" aria-hidden="true"></span>
+    </a>
+  </section>
+
+  <section id="intro" class="section intro wrap">
+    <p class="label" data-reveal>01 — The band</p>
+    <p class="lede" data-reveal style="--reveal-delay: 0.15s">{bio[0]}</p>
+    <a class="more" href="/about/" data-reveal style="--reveal-delay: 0.3s">
+      More about us <span aria-hidden="true">→</span>
+    </a>
+  </section>
+
+  <Marquee text="New Romans" />
+
+  <section class="section wrap">
+    <div class="split-head" data-reveal>
+      <h2 class="display h2">Contact <span class="accent">sheet</span></h2>
+      <a class="more" href="/photos/">All photos <span aria-hidden="true">→</span></a>
+    </div>
+    <PhotoGrid limit={3} lightbox={false} />
+  </section>
+
+  <section class="signup">
+    <div class="wrap signup-inner">
+      <div data-reveal>
+        <p class="label signup-label">02 — Newsletter</p>
+        <h2 class="display h2">
+          Get it <span class="accent">first</span>
+        </h2>
+        <p>New songs, shows and the occasional dispatch from the van. No spam, ever.</p>
+      </div>
+      <div data-reveal style="--reveal-delay: 0.2s">
+        <Newsletter />
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* ---------- Hero ---------- */
+
+  .hero {
+    position: relative;
+    display: grid;
+    align-items: end;
+    min-height: 100svh;
+    overflow: hidden;
+    isolation: isolate;
+    background:
+      radial-gradient(ellipse at 80% 10%, #3a1d0c 0%, transparent 55%),
+      radial-gradient(ellipse at 10% 90%, #2a1708 0%, transparent 50%),
+      var(--black);
+  }
+
+  .hero :global(.hero-img) {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: sepia(0.45) saturate(1.2) contrast(1.1) brightness(0.6);
+    animation: slow-zoom 30s ease-out both;
+  }
+
+  .hero-wash {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(180deg, rgba(14, 11, 8, 0.2) 0%, rgba(14, 11, 8, 0.1) 40%, var(--black) 100%);
+  }
+
+  .hero-inner {
+    position: relative;
+    padding-bottom: clamp(5rem, 12vh, 9rem);
+  }
+
+  .hero-kicker {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    margin: 0 0 1.25rem;
+    color: var(--amber);
+    animation: fade-up 1.6s var(--ease-film) 0.2s both;
+  }
+
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--orange);
+  }
+
+  .hero-title {
+    font-size: clamp(5rem, 1rem + 19vw, 18rem);
+    line-height: 0.82;
+    color: var(--cream);
+  }
+
+  .line {
+    display: block;
+    overflow: hidden;
+    padding-bottom: 0.02em;
+  }
+
+  .line > span {
+    display: inline-block;
+    animation: rise 1.8s var(--ease-film) both;
+  }
+
+  .line:nth-child(2) > span {
+    animation-delay: 0.18s;
+    color: var(--orange);
+  }
+
+  .hero-tag {
+    margin: 1rem 0 2.25rem;
+    font-size: clamp(1.6rem, 1rem + 2.6vw, 3.25rem);
+    line-height: 1.1;
+    animation: fade-up 1.8s var(--ease-film) 0.6s both;
+  }
+
+  .hero-cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.9rem;
+    animation: fade-up 1.8s var(--ease-film) 0.85s both;
+  }
+
+  .scroll-cue {
+    position: absolute;
+    right: var(--gutter);
+    bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--cream-dim);
+    text-decoration: none;
+    writing-mode: vertical-rl;
+  }
+
+  .cue-line {
+    width: 1px;
+    height: 56px;
+    background: linear-gradient(var(--amber), transparent);
+    animation: cue 2.8s ease-in-out infinite;
+    transform-origin: top;
+  }
+
+  @keyframes rise {
+    from { transform: translateY(105%); }
+    to { transform: none; }
+  }
+
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @keyframes slow-zoom {
+    from { transform: scale(1.12); }
+    to { transform: scale(1); }
+  }
+
+  @keyframes cue {
+    0% { transform: scaleY(0); opacity: 1; }
+    60% { transform: scaleY(1); opacity: 1; }
+    100% { transform: scaleY(1); opacity: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .scroll-cue { display: none; }
+  }
+
+  /* ---------- Body sections ---------- */
+
+  .intro {
+    display: grid;
+    gap: 1.5rem;
+    max-width: 980px;
+  }
+
+  .intro .lede {
+    margin: 0;
+    font-size: clamp(1.8rem, 1.2rem + 2.4vw, 3.4rem);
+  }
+
+  .more {
+    justify-self: start;
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .h2 {
+    font-size: clamp(3rem, 2rem + 5vw, 6.5rem);
+  }
+
+  .split-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: clamp(2rem, 4vw, 3.5rem);
+  }
+
+  .signup {
+    padding-block: clamp(4rem, 9vw, 8rem);
+    background:
+      radial-gradient(ellipse at 100% 0%, rgba(232, 163, 61, 0.55), transparent 60%),
+      var(--orange);
+    color: var(--black);
+  }
+
+  .signup-inner {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 380px), 1fr));
+    align-items: center;
+    gap: 2.5rem;
+  }
+
+  .signup .h2 .accent {
+    color: var(--cream);
+  }
+
+  .signup p {
+    max-width: 40ch;
+  }
+
+  .signup-label {
+    color: var(--black);
+    opacity: 0.7;
+  }
+</style>
