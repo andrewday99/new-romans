@@ -8,9 +8,11 @@ import { band } from '../config';
 interface Props {
   title?: string;
   description?: string;
+  /** Page content only: no nav, footer or grain overlay. */
+  bare?: boolean;
 }
 
-const { title, description = band.description } = Astro.props;
+const { title, description = band.description, bare = false } = Astro.props;
 const fullTitle = title ? `${title} — ${band.name}` : `${band.name} — ${band.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -39,12 +41,12 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
   </head>
   <body>
     <a class="skip visually-hidden" href="#main">Skip to content</a>
-    <Nav />
+    {!bare && <Nav />}
     <main id="main">
       <slot />
     </main>
-    <Footer />
-    <Grain />
+    {!bare && <Footer />}
+    {!bare && <Grain />}
 
     <script>
       const targets = document.querySelectorAll<HTMLElement>('[data-reveal]');
