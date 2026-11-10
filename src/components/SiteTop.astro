@@ -9,6 +9,7 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
 <header class="top">
   <a href="/" class="brand">
     <Image src={logo} alt="New Romans" width={340} densities={[1, 2]} loading="eager" />
+    <span class="o-hole" data-o-hole aria-hidden="true"></span>
   </a>
   <nav class="links" aria-label="Main">
     <a href="/contact/" class="tab" aria-current={path === '/contact/' ? 'page' : undefined}>Contact</a>
@@ -19,6 +20,104 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
 <p class="note" role="status" aria-live="polite" data-note></p>
 
 <script>
+  // Secret: hold the cursor inside the O of "NEW ROMANS" for 5 seconds and the
+  // O opens up into /o/. Geometry below is in logo.png pixels (1320 × 200).
+  const HOLD_MS = 5000;
+  const LOGO = { w: 1320, h: 200 };
+  const O_OUTER = { x: 609, y: 21, w: 145, h: 144, stroke: 30 };
+
+  const hole = document.querySelector<HTMLElement>('[data-o-hole]');
+  const brand = hole?.closest<HTMLAnchorElement>('.brand');
+  const logoImg = brand?.querySelector('img');
+  let holdTimer: number | undefined;
+  let opened = false;
+
+  const prefetch = () => {
+    if (document.querySelector('link[data-o-prefetch]')) return;
+    const link = Object.assign(document.createElement('link'), { rel: 'prefetch', href: '/o/' });
+    link.dataset.oPrefetch = '';
+    document.head.append(link);
+  };
+
+  const startHold = () => {
+    if (opened || !hole) return;
+    prefetch();
+    hole.classList.add('is-holding');
+    clearTimeout(holdTimer);
+    holdTimer = window.setTimeout(openO, HOLD_MS);
+  };
+
+  const cancelHold = () => {
+    if (opened) return;
+    clearTimeout(holdTimer);
+    hole?.classList.remove('is-holding');
+  };
+
+  function openO() {
+    if (!logoImg) return;
+    opened = true;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      window.location.href = '/o/';
+      return;
+    }
+
+    const r = logoImg.getBoundingClientRect();
+    const sx = r.width / LOGO.w;
+    const sy = r.height / LOGO.h;
+    const left = r.left + O_OUTER.x * sx;
+    const top = r.top + O_OUTER.y * sy;
+    const width = O_OUTER.w * sx;
+    const height = O_OUTER.h * sy;
+    const stroke = O_OUTER.stroke * sx;
+
+    // Scale until the inside of the O covers the farthest corner of the screen.
+    const cx = left + width / 2;
+    const cy = top + height / 2;
+    const reach = Math.max(
+      Math.hypot(cx, cy),
+      Math.hypot(window.innerWidth - cx, cy),
+      Math.hypot(cx, window.innerHeight - cy),
+      Math.hypot(window.innerWidth - cx, window.innerHeight - cy),
+    );
+    const scale = (reach / (Math.min(width, height) / 2 - stroke)) * 1.15;
+
+    const portal = document.createElement('div');
+    portal.className = 'o-portal';
+    Object.assign(portal.style, {
+      left: `${left}px`,
+      top: `${top}px`,
+      width: `${width}px`,
+      height: `${height}px`,
+      borderWidth: `${stroke}px`,
+    });
+    document.body.append(portal);
+
+    const zoom = portal.animate(
+      [
+        // A small inhale, then the O rushes out past the edges of the screen.
+        { transform: 'scale(1)', easing: 'cubic-bezier(0.3, 0, 0.4, 1)' },
+        { transform: 'scale(0.86)', offset: 0.2, easing: 'cubic-bezier(0.55, 0, 0.9, 0.45)' },
+        { transform: `scale(${scale})` },
+      ],
+      { duration: 1800, fill: 'forwards' },
+    );
+    zoom.finished.then(() => {
+      window.location.href = '/o/';
+    });
+  }
+
+  if (hole && brand) {
+    hole.addEventListener('pointerenter', startHold);
+    hole.addEventListener('pointerleave', cancelHold);
+    hole.addEventListener('pointercancel', cancelHold);
+    // Touch: press and hold on the O. Stop the long-press menu and the tap-through to home.
+    hole.addEventListener('contextmenu', (e) => e.preventDefault());
+    brand.addEventListener('click', (e) => {
+      if (opened) e.preventDefault();
+    });
+  }
+
   const note = document.querySelector<HTMLElement>('[data-note]');
   let timer: number | undefined;
 
@@ -46,8 +145,60 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
     gap: 1rem 1.5rem;
   }
 
+  .brand {
+    position: relative;
+    display: block;
+  }
+
   .brand img {
+    display: block;
     width: clamp(170px, 26vw, 340px);
+    height: auto;
+  }
+
+  /* Sits exactly over the counter (the hole) of the O in logo.png. */
+  .o-hole {
+    position: absolute;
+    left: calc(640 / 1320 * 100%);
+    top: calc(49 / 200 * 100%);
+    width: calc(83 / 1320 * 100%);
+    height: calc(87 / 200 * 100%);
+    border-radius: 50%;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    user-select: none;
+  }
+
+  .o-hole::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(closest-side, rgb(254 241 195 / 0.55), rgb(254 241 195 / 0) 100%);
+    opacity: 0;
+    transform: scale(0.4);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  /* A slow warm glow builds inside the O while the cursor holds there. */
+  .o-hole.is-holding::before {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+      opacity 5s linear,
+      transform 5s cubic-bezier(0.5, 0, 0.75, 0);
+  }
+
+  :global(.o-portal) {
+    position: fixed;
+    z-index: 1000;
+    border: 0 solid #fef1c3;
+    border-radius: 50%;
+    background: #000;
+    pointer-events: none;
+    will-change: transform;
   }
 
   .links {

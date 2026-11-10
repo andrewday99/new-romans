@@ -10,9 +10,11 @@ interface Props {
   description?: string;
   /** Page content only: no nav, footer or grain overlay. */
   bare?: boolean;
+  /** Keep this page out of search results. */
+  noindex?: boolean;
 }
 
-const { title, description = band.description, bare = false } = Astro.props;
+const { title, description = band.description, bare = false, noindex = false } = Astro.props;
 const fullTitle = title ? `${title} — ${band.name}` : `${band.name} — ${band.tagline}`;
 const canonical = new URL(Astro.url.pathname, Astro.site);
 ---
@@ -25,6 +27,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, nofollow" />}
     <link rel="icon" href="/favicon.png" type="image/png" sizes="96x96" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="sitemap" href="/sitemap-index.xml" />
