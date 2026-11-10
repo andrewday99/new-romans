@@ -1,0 +1,62 @@
+---
+import { Image } from 'astro:assets';
+import logo from '../assets/images/logo.png';
+
+const path = Astro.url.pathname.replace(/\/?$/, '/');
+---
+
+<header class="top">
+  <a href="/" class="brand">
+    <Image src={logo} alt="New Romans" width={340} densities={[1, 2]} loading="eager" />
+  </a>
+  <nav aria-label="Main">
+    <a href="/contact/" class="tab" aria-current={path === '/contact/' ? 'page' : undefined}>Contact</a>
+  </nav>
+</header>
+
+<style>
+  .top {
+    position: absolute;
+    top: var(--gutter);
+    left: var(--gutter);
+    right: var(--gutter);
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+  }
+
+  .brand img {
+    width: clamp(170px, 26vw, 340px);
+  }
+
+  .tab {
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: clamp(0.78rem, 0.7rem + 0.3vw, 0.95rem);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--cream);
+    text-decoration: none;
+  }
+
+  .tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0.16em;
+    bottom: -6px;
+    height: 2px;
+    background: var(--cream);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s var(--ease-film);
+  }
+
+  .tab:hover::after,
+  .tab:focus-visible::after,
+  .tab[aria-current='page']::after {
+    transform: scaleX(1);
+  }
+</style>

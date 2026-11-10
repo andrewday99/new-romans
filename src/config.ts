@@ -12,14 +12,17 @@ export const band = {
   email: 'hello@newromansband.com',
 };
 
-// TODO: fill in real profile URLs. Entries with an empty href are hidden.
-export const socials: { label: string; href: string }[] = [
-  { label: 'Instagram', href: '' },
-  { label: 'Spotify', href: '' },
-  { label: 'Bandcamp', href: '' },
-  { label: 'YouTube', href: '' },
-  { label: 'TikTok', href: '' },
+// TODO: fill in real profile URLs. The home page shows every icon but only links
+// those with an href; the footer hides entries with an empty href.
+export const socials: { label: string; icon: SocialIcon; href: string }[] = [
+  { label: 'Instagram', icon: 'instagram', href: '' },
+  { label: 'Facebook', icon: 'facebook', href: '' },
+  { label: 'TikTok', icon: 'tiktok', href: '' },
+  { label: 'Spotify', icon: 'spotify', href: '' },
+  { label: 'Apple Music', icon: 'music', href: '' },
 ];
+
+export type SocialIcon = 'instagram' | 'facebook' | 'tiktok' | 'spotify' | 'music';
 
 export const nav = [
   { href: '/', label: 'Home' },
