@@ -8,7 +8,7 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
 
 <header class="top">
   <a href="/" class="brand">
-    <Image src={logo} alt="New Romans" width={340} densities={[1, 2]} loading="eager" />
+    <Image src={logo} alt="New Romans" draggable="false" width={340} densities={[1, 2]} loading="eager" />
     <span class="o-hole" data-o-hole aria-hidden="true"></span>
   </a>
   <nav class="links" aria-label="Main">
@@ -108,11 +108,45 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
   }
 
   if (hole && brand) {
-    hole.addEventListener('pointerenter', startHold);
-    hole.addEventListener('pointerleave', cancelHold);
-    hole.addEventListener('pointercancel', cancelHold);
-    // Touch: press and hold on the O. Stop the long-press menu and the tap-through to home.
-    hole.addEventListener('contextmenu', (e) => e.preventDefault());
+    // Mouse: rest the cursor inside the O.
+    hole.addEventListener('pointerenter', (e) => {
+      if (e.pointerType === 'mouse') startHold();
+    });
+    hole.addEventListener('pointerleave', (e) => {
+      if (e.pointerType === 'mouse') cancelHold();
+    });
+
+    // Touch: the O is too small to hit reliably with a finger, so pressing and
+    // holding anywhere on the logo counts. A little finger drift is allowed.
+    const DRIFT_PX = 30;
+    let touchId: number | null = null;
+    let startX = 0;
+    let startY = 0;
+
+    const endTouch = (e: PointerEvent) => {
+      if (e.pointerId !== touchId) return;
+      touchId = null;
+      cancelHold();
+    };
+
+    brand.addEventListener('pointerdown', (e) => {
+      if (e.pointerType === 'mouse' || touchId !== null) return;
+      touchId = e.pointerId;
+      startX = e.clientX;
+      startY = e.clientY;
+      startHold();
+    });
+    brand.addEventListener('pointermove', (e) => {
+      if (e.pointerId !== touchId) return;
+      if (Math.hypot(e.clientX - startX, e.clientY - startY) > DRIFT_PX) endTouch(e);
+    });
+    brand.addEventListener('pointerup', endTouch);
+    brand.addEventListener('pointercancel', endTouch);
+
+    // No long-press menu or link preview on the logo, and once the O has
+    // opened, the finger lifting must not count as a tap on the home link.
+    brand.addEventListener('contextmenu', (e) => e.preventDefault());
+    brand.addEventListener('dragstart', (e) => e.preventDefault());
     brand.addEventListener('click', (e) => {
       if (opened) e.preventDefault();
     });
@@ -148,6 +182,16 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
   .brand {
     position: relative;
     display: block;
+    /* The logo doubles as the touch target for the secret hold: no scrolling,
+       callout menu, image drag or text selection starting from it. */
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  .brand img {
+    -webkit-user-drag: none;
   }
 
   .brand img {
@@ -164,9 +208,6 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
     width: calc(83 / 1320 * 100%);
     height: calc(87 / 200 * 100%);
     border-radius: 50%;
-    touch-action: none;
-    -webkit-touch-callout: none;
-    user-select: none;
   }
 
   .o-hole::before {
