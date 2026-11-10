@@ -20,9 +20,9 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
 <p class="note" role="status" aria-live="polite" data-note></p>
 
 <script>
-  // Secret: hold the cursor inside the O of "NEW ROMANS" for 5 seconds and the
+  // Secret: hold the cursor inside the O of "NEW ROMANS" for 3 seconds and the
   // O opens up into /o/. Geometry below is in logo.png pixels (1320 × 200).
-  const HOLD_MS = 5000;
+  const HOLD_MS = 3000;
   const LOGO = { w: 1320, h: 200 };
   const O_OUTER = { x: 609, y: 21, w: 145, h: 144, stroke: 30 };
 
@@ -228,8 +228,8 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
     opacity: 1;
     transform: scale(1);
     transition:
-      opacity 5s linear,
-      transform 5s cubic-bezier(0.5, 0, 0.75, 0);
+      opacity 3s linear,
+      transform 3s cubic-bezier(0.5, 0, 0.75, 0);
   }
 
   :global(.o-portal) {
