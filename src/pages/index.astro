@@ -2,7 +2,6 @@
 import { Image } from 'astro:assets';
 import Base from '../layouts/Base.astro';
 import SiteTop from '../components/SiteTop.astro';
-import SocialIcons from '../components/SocialIcons.astro';
 import paparazziPainting from '../assets/images/paparazzi-painting.png';
 import paparazziDuotone from '../assets/images/paparazzi-duotone.png';
 import pressCrowd from '../assets/images/press-crowd.png';
@@ -36,7 +35,6 @@ const artwork = [
         </div>
       ))}
     </div>
-    <SocialIcons />
   </section>
 </Base>
 
@@ -91,9 +89,8 @@ const artwork = [
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     place-items: center;
-    gap: clamp(2.5rem, 6vw, 4.5rem);
     min-height: 100svh;
-    padding: calc(var(--gutter) * 2 + 3rem) var(--gutter) var(--gutter);
+    padding: var(--header-space) var(--gutter) var(--gutter);
     background: #000;
   }
 

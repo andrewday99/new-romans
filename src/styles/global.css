@@ -22,8 +22,17 @@
   --gutter: clamp(16px, 4vw, 48px);
   --max: 1240px;
   --ease-film: cubic-bezier(0.22, 0.61, 0.36, 1);
+  /* Room above page content for the absolutely positioned SiteTop header. */
+  --header-space: calc(var(--gutter) * 2 + 3rem);
 
   color-scheme: dark;
+}
+
+@media (max-width: 600px) {
+  :root {
+    /* SiteTop stacks the logo above its links on phones. */
+    --header-space: calc(var(--gutter) * 2 + 5.5rem);
+  }
 }
 
 *,

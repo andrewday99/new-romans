@@ -1,5 +1,6 @@
 ---
 import { Image } from 'astro:assets';
+import SocialIcons from './SocialIcons.astro';
 import logo from '../assets/images/logo.png';
 
 const path = Astro.url.pathname.replace(/\/?$/, '/');
@@ -9,10 +10,28 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
   <a href="/" class="brand">
     <Image src={logo} alt="New Romans" width={340} densities={[1, 2]} loading="eager" />
   </a>
-  <nav aria-label="Main">
+  <nav class="links" aria-label="Main">
     <a href="/contact/" class="tab" aria-current={path === '/contact/' ? 'page' : undefined}>Contact</a>
+    <SocialIcons />
   </nav>
 </header>
+
+<p class="note" role="status" aria-live="polite" data-note></p>
+
+<script>
+  const note = document.querySelector<HTMLElement>('[data-note]');
+  let timer: number | undefined;
+
+  document.querySelectorAll('[data-not-ready]').forEach((button) => {
+    button.addEventListener('click', () => {
+      if (!note) return;
+      note.textContent = "Be patient! We're not quite ready yet.";
+      note.classList.add('is-visible');
+      clearTimeout(timer);
+      timer = window.setTimeout(() => note.classList.remove('is-visible'), 2800);
+    });
+  });
+</script>
 
 <style>
   .top {
@@ -24,11 +43,25 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 1.5rem;
+    gap: 1rem 1.5rem;
   }
 
   .brand img {
     width: clamp(170px, 26vw, 340px);
+  }
+
+  .links {
+    display: flex;
+    align-items: center;
+    gap: clamp(1.5rem, 3vw, 2.75rem);
+  }
+
+  /* Phones: icons and Contact drop to their own row under the logo. */
+  @media (max-width: 600px) {
+    .top {
+      flex-direction: column;
+      align-items: flex-start;
+    }
   }
 
   .tab {
@@ -58,5 +91,38 @@ const path = Astro.url.pathname.replace(/\/?$/, '/');
   .tab:focus-visible::after,
   .tab[aria-current='page']::after {
     transform: scaleX(1);
+  }
+
+  .note {
+    position: fixed;
+    top: calc(var(--gutter) + clamp(56px, 6vw, 72px));
+    right: var(--gutter);
+    z-index: 20;
+    margin: 0;
+    padding: 0.85rem 1.25rem;
+    border: 1px solid rgb(239 227 204 / 0.35);
+    background: #0b0b0b;
+    color: var(--cream);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.05rem, 0.95rem + 0.4vw, 1.3rem);
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition: opacity 0.35s var(--ease-film), transform 0.35s var(--ease-film);
+  }
+
+  .note.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 600px) {
+    .note {
+      top: auto;
+      bottom: var(--gutter);
+      left: var(--gutter);
+      text-align: center;
+    }
   }
 </style>
